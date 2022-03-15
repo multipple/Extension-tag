@@ -18,5 +18,8 @@
   ],
   "peerDependencies": {
     "marko": "^4.12.4 || ^5"
+  },
+  "dependencies": {
+    "@marko-tags/context": "^2.2.2"
   }
 }

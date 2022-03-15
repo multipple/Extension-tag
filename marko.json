@@ -1,4 +1,5 @@
 {
+  "tags-dir": ["./components"],
   "<Extension>": {
     "template": "./index.marko"
   }
