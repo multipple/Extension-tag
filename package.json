@@ -2,10 +2,7 @@
   "name": "@multipple/extension-tag",
   "version": "0.0.4",
   "description": "MarkoJS component to load and manage Plugin or Application (extension)",
-  "repository": "https://github.com/multipple/Extension-tag",
-  "author": "Fabrice K.M. Ekpetse <fabrice.xyclone@gmail.com>",
-  "license": "MIT",
-  "bugs": "https://github.com/multipple/Extension-tag/issues/new",
+  "main": "./src/index.marko",
   "files": [
     "src",
     "marko.json"
@@ -22,5 +19,9 @@
   },
   "dependencies": {
     "@marko-tags/context": "^2.2.2"
-  }
+  },
+  "repository": "https://github.com/multipple/Extension-tag",
+  "bugs": "https://github.com/multipple/Extension-tag/issues/new",
+  "author": "Fabrice K.M. Ekpetse <fabrice.xyclone@gmail.com>",
+  "license": "MIT"
 }
