@@ -1,6 +1,6 @@
 {
   "name": "@multipple/extension-tag",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "MarkoJS component to load and manage Plugin or Application (extension)",
   "repository": "https://github.com/multipple/Extension-tag",
   "author": "Fabrice K.M. Ekpetse <fabrice.xyclone@gmail.com>",
