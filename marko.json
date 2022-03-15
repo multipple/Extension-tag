@@ -1,6 +1,6 @@
 {
-  "tags-dir": ["./components"],
+  "tags-dir": "./src/components",
   "<Extension>": {
-    "template": "./index.marko"
+    "template": "./src/index.marko"
   }
 }

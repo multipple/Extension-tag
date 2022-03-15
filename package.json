@@ -7,15 +7,14 @@
   "license": "MIT",
   "bugs": "https://github.com/multipple/Extension-tag/issues/new",
   "files": [
-    "components",
-    "lib",
-    "index.marko",
+    "src",
     "marko.json"
   ],
   "homepage": "https://github.com/multipple/Extension-tag/tree/master",
   "keywords": [
     "multipple",
     "marko",
+    "components",
     "extension"
   ],
   "peerDependencies": {
