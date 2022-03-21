@@ -49,6 +49,9 @@ function Instance( ___, $ ){
                               ...options 
                             })
     },
+
+    // Translate string text to locale language using function method
+    String: text => { return $.RenderLocale( text ) }
   },
   
   // List of states fields declared by in the plugins

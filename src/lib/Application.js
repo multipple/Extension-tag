@@ -49,6 +49,9 @@ function Instance( ___, $ ){
                               ...options 
                             })
     },
+
+    // Translate string text to locale language using function method
+    String: text => { return $.RenderLocale( text ) },
     
     Permission: {
 
@@ -198,7 +201,7 @@ function Instance( ___, $ ){
   }
 
   // Return configuration of a given plugin used in the app
-  this.getPlugin = nsi => { console.log( ___.input.meta ); return ___.input.meta.plugins && ___.input.meta.plugins[ nsi ] }
+  this.getPlugin = nsi => { return ___.input.meta.plugins && ___.input.meta.plugins[ nsi ] }
 
   // Forward app `event` to Extension wrapper's component
   this.emit = ( ...args ) => $.Emit( ...args )
