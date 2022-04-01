@@ -7,7 +7,7 @@ class {
     this.state = {
       loaded: false, 
       errmess: false,
-      currentLanguage: 'en-US'
+      currentLanguage: window.navigator.language || 'en-US' // Use browser language by default
     }
     
     input = this.exactInput( input )
@@ -16,18 +16,25 @@ class {
     
     this.isDP = !!input.core // Dependency plugin
     this.nsi = input.id || input.nsi
-    this.extension = null
     this.root = null
+    this.extension = null
 
     this.Manager = null
     this.LanguageManifest = null
     this.LanguageDictionary = null
     
+    // Available runtime environment global state variables
     GState.bind( this, [ this.nsi, 'tenant', 'user', 'theme', 'workspace', 'screen', 'locale' ] )
 
+    // Define current working path base on the runtime environment
     this.resolveRoot( input )
+
+    // User language selected/defined by the user
+    if( this.state.user && this.state.user.language )
+      this.state.currentLanguage = this.state.user.language
     // Load defined language manifest and dictionaries
     await this.loadLanguageManifest() && await this.loadLocaleDictionary( true )
+
     // Fetch component module
     await this.fetchComponent( input )
   }
@@ -48,7 +55,7 @@ class {
     return this.meta && this.meta.nsi ? this.meta : null
   }
   resolveRoot( input ){
-    // Get extension path by account type configuration
+    // Get extension path base on its configuration and the runtime environment
     const
     { type, nsi, runscript, version, namespace } = input,
     accountType = this.state.user.accounttype.toUpperCase(),
@@ -311,7 +318,7 @@ class {
         delete meta.payload
       }
       
-      <context locale=state.locale
+      <context locale=(state.locale || state.currentLanguage)
                 RenderLocale=component.RenderLocale.bind( component )>
         <${component.extension} meta=meta
                                 payload=(state[ component.nsi ] || input.payload)
