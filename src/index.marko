@@ -318,7 +318,7 @@ class {
         delete meta.payload
       }
       
-      <context locale=(state.locale || state.currentLanguage)
+      <context locale=state.currentLanguage
                 RenderLocale=component.RenderLocale.bind( component )>
         <${component.extension} meta=meta
                                 payload=(state[ component.nsi ] || input.payload)
