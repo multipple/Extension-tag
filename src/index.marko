@@ -180,6 +180,15 @@ class {
     } )
   }
   Emit( ...args ){
+    
+    /* FIXME: Temporary fix to the lost of binding
+              of callback functions sent from extension
+              to Core client.
+    */
+    const callback = args.slice(-1)[0]
+    if( callback && typeof callback == 'function' )
+      args[ args.length - 1 ] = function( ...parms ){ callback( ...params ) }
+    
     this.emit( ...args )
     this.emit('forward', ...args )
 
