@@ -32,6 +32,12 @@ function Instance( ___, $ ){
       _state.get = ss.getState
       _state.dirty = ss.setStateDirty
       _state.define = ss.defineAPI
+      _state.once = ( _event, fn ) => {
+        return _state.on( _event, value => {
+          fn( value )
+          _state.off( _event )
+        } )
+      }
       
       return _state
     } )(), 
