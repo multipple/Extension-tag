@@ -18,7 +18,8 @@
     "marko": "^4.12.4 || ^5"
   },
   "dependencies": {
-    "@marko-tags/context": "^2.2.2"
+    "@marko-tags/context": "^2.2.2",
+    "socket.io-client": "^4.5.1"
   },
   "repository": "https://github.com/multipple/Extension-tag",
   "bugs": "https://github.com/multipple/Extension-tag/issues/new",

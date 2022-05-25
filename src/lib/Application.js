@@ -1,6 +1,10 @@
 
-import Storage from 'all-localstorage'
-import SharedState from 'markojs-shared-state'
+import GState from '../features/GState'
+import CloudDB from '../features/CloudDB'
+import UIStore from '../features/UIStore'
+import APIRequest from '../features/APIRequest'
+import Permissions from '../features/Permissions'
+import Notifications from '../features/Notifications'
 
 function Instance( ___, $ ){
   
@@ -9,135 +13,20 @@ function Instance( ___, $ ){
   extensionId = $.nsi,
 
   Features = {
-    // Localstorage support
-    UIStore: new Storage({ prefix: extensionId, encrypt: true }),
-
     // Global state in-app support
-    State: ( () => {
-      const 
-      ss = SharedState(),
-      _state = ss
-
-      _state.init = payload => ___.setState( payload )
-
-      _state.bind = ss.bind
-      _state.unbind = ( _, list ) => {
-        stateKeys = stateKeys.filter( each => { return !each.includes( list ) } )
-        ss.unbind( _, list )
-      }
-      _state.set = ( key, value ) => {
-        !stateKeys.includes( key ) && stateKeys.push( key ) // Record new key
-        ss.setState( key, value )
-      }
-      _state.get = ss.getState
-      _state.dirty = ss.setStateDirty
-      _state.define = ss.defineAPI
-      _state.once = ( _event, fn ) => {
-        return _state.on( _event, value => {
-          fn( value )
-          _state.off( _event )
-        } )
-      }
-      
-      return _state
-    } )(), 
-
+    State: GState( ___ ),
+    // Localstorage support
+    UIStore: UIStore( extensionId ),
     // API request handler
-    Request: async ( url, options ) => {
-      return await $.Request({
-                              extensionId,
-                              url,
-                              /*
-                              responseType: 'json',
-                              body: {...},
-                              authType: false,
-                              */
-                              ...options 
-                            })
-    },
-
+    Request: APIRequest( extensionId, $ ),
+    // App/Plugin permissions Manager
+    Permission: Permissions( app, ___, GState ),
+    // App/Plugin Notification Manager
+    Notification: Notifications( extensionId, ___, GState ),
+    // Cloud based DB support
+    DB: CloudDB( 'http://marketplace.multipple.com', '1.0', extensionId ),
     // Translate string text to locale language using function method
-    String: text => { return $.RenderLocale( text ) },
-    
-    Permission: {
-
-      getScope: () => { return ( app.getConfig('permissions') || {} ).scope || [] },
-
-      setScope: list => {
-        if( !Array.isArray( list ) || !list.length ) return
-        
-        !___.input.meta.permissions ?
-                      ___.input.meta.permissions = { scope: list } // New permission
-                      : ___.input.meta.permissions.scope = list // Update permission scope
-      },
-      
-      ask: ( type, scope ) => {
-        // Manually ask permission scope and wait for granted list
-        return new Promise( resolve => GState.permission.ask( type, ___.input.meta, scope, resolve ) )
-      },
-
-      mandatory: async ( mandatoryTypes, list, crossCheck ) => {
-        /* Check for none granted mandatory permissions 
-          and re-ask for those to be granted.
-        */
-        list = list || Features.Permission.getScope()
-        
-        let mandatoryScope = []
-    
-        list.map( ({ type, access }) => {
-          if( mandatoryTypes.includes( type ) && access !== 'GRANTED' )
-            mandatoryScope.push({ type, access })
-        } )
-
-        // All granted
-        if( !mandatoryScope.length ) return true
-        // All denied or cancelled
-        if( crossCheck ) return false
-    
-        const grantedList = await Features.Permission.ask( 'scope', mandatoryScope )
-        if( !Array.isArray( grantedList ) || !grantedList.length ) 
-          return false // denied
-        
-        // Cross-check whether they are granted: Otherwise close app
-        const response = await Features.Permission.mandatory( mandatoryTypes, grantedList, true )
-        if( response === true ){
-          // All mandatories are now granted
-          grantedList.map( granted => {
-            Features.Permission.setScope( list.map( each => {
-              if( each.type == granted.type ) each.access = granted.access
-              return each
-            } ) )
-          } )
-          
-          // Submit changes
-          await app.setConfig({ type: 'permissions', configs: app.getConfig('permissions') })
-          // Refresh extension display with the new config udpate
-          app.refresh()
-
-          return true
-        }
-    
-        // Mandatory permissions denied
-        return false
-      }
-    },
-
-    Notification: {
-
-      show: message => {
-        const 
-        { name, favicon } = ___.input.meta,
-        payload = {
-          icon: favicon,
-          title: name,
-          message
-        }
-
-        GState.notification.new( appId, payload )
-      },
-
-      bell: () => Features.Notification.show('')
-    }
+    String: text => { return $.RenderLocale( text ) }
   },
   
   // List of states fields declared by in the apps

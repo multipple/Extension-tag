@@ -9,53 +9,12 @@ function Instance( ___, $ ){
   extensionId = $.nsi,
 
   Features = {
+    // Global state in-app support
+    State: GState( ___ ),
     // Localstorage support
-    UIStore: new Storage({ prefix: extensionId, encrypt: true }),
-
-    // Global state in-plugin support
-    State: ( () => {
-      const 
-      ss = SharedState(),
-      _state = ss
-
-      _state.init = payload => ___.setState( payload )
-
-      _state.bind = ss.bind
-      _state.unbind = ( _, list ) => {
-        stateKeys = stateKeys.filter( each => { return !each.includes( list ) } )
-        ss.unbind( _, list )
-      }
-      _state.set = ( key, value ) => {
-        !stateKeys.includes( key ) && stateKeys.push( key ) // Record new key
-        ss.setState( key, value )
-      }
-      _state.get = ss.getState
-      _state.dirty = ss.setStateDirty
-      _state.define = ss.defineAPI
-      _state.once = ( _event, fn ) => {
-        return _state.on( _event, value => {
-          fn( value )
-          _state.off( _event )
-        } )
-      }
-      
-      return _state
-    } )(),
-
+    UIStore: UIStore( extensionId ),
     // API request handler
-    Request: async ( url, options ) => {
-      return await $.Request({
-                              extensionId,
-                              url,
-                              /*
-                              responseType: 'json',
-                              body: {...},
-                              authType: false,
-                              */
-                              ...options 
-                            })
-    },
-
+    Request: APIRequest( extensionId, $ ),
     // Translate string text to locale language using function method
     String: text => { return $.RenderLocale( text ) }
   },
