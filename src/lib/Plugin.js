@@ -1,6 +1,7 @@
 
-import Storage from 'all-localstorage'
-import SharedState from 'markojs-shared-state'
+import GState from '../features/GState'
+import UIStore from '../features/UIStore'
+import APIRequest from '../features/APIRequest'
 
 function Instance( ___, $ ){
   
