@@ -1,6 +1,6 @@
 
 import GState from '../features/GState'
-import CloudDB from '../features/CloudDB'
+import CloudDB from '../features/cloud.db-client'
 import UIStore from '../features/UIStore'
 import APIRequest from '../features/APIRequest'
 import Permissions from '../features/Permissions'
@@ -24,7 +24,7 @@ function Instance( ___, $ ){
     // App/Plugin Notification Manager
     Notification: Notifications( extensionId, ___, GState ),
     // Cloud based DB support
-    DB: CloudDB( 'http://marketplace.multipple.com', '1.0', extensionId ),
+    DB: CloudDB( 'http://marketplace.multipple.com:5119', '1.0', 'MP.WEB/2.0', extensionId ),
     // Translate string text to locale language using function method
     String: text => { return $.RenderLocale( text ) }
   },
