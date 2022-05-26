@@ -5,6 +5,7 @@ export default context => {
   const
   ss = SharedState(),
   state = ss
+  let stateKeys = []
 
   state.init = payload => context.setState( payload )
 
