@@ -35,7 +35,7 @@ class {
 
 <if( state.image )><img ...state.attrs src=state.image draggable="false"/></if>
 <else>
-  <div.image-placeholder.d-flex.align-items-center.justify-content-center
+  <div.image-placeholder.d-inline-flex.align-items-center.justify-content-center
         class=`${input.class} ${state.loading ? 'animated-placeholder' : ''} ${!input.noBackground ? 'theme-bg-lighten' : ''}` 
         style=state.attrs.style>
     <div.w-100.text-center>
