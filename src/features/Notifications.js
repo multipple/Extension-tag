@@ -1,8 +1,7 @@
 
 export default ( appId, context, state ) => {
 
-  return {
-
+  const api = {
     show: message => {
       const 
       { name, favicon } = context.input.meta,
@@ -15,6 +14,8 @@ export default ( appId, context, state ) => {
       state && state.notification.new( appId, payload )
     },
 
-    bell: () => this.show('')
+    bell: () => api.show('')
   }
+
+  return api
 }

@@ -1,7 +1,7 @@
 
 export default ( app, context, state ) => {
 
-  return {
+  const api = {
     getScope: () => { return ( app.getConfig('permissions') || {} ).scope || [] },
 
     setScope: list => {
@@ -21,7 +21,7 @@ export default ( app, context, state ) => {
       /* Check for none granted mandatory permissions 
         and re-ask for those to be granted.
       */
-      list = list || this.getScope()
+      list = list || api.getScope()
       
       let mandatoryScope = []
   
@@ -35,16 +35,16 @@ export default ( app, context, state ) => {
       // All denied or cancelled
       if( crossCheck ) return false
   
-      const grantedList = await this.ask( 'scope', mandatoryScope )
+      const grantedList = await api.ask( 'scope', mandatoryScope )
       if( !Array.isArray( grantedList ) || !grantedList.length ) 
         return false // denied
       
       // Cross-check whether they are granted: Otherwise close app
-      const response = await this.mandatory( mandatoryTypes, grantedList, true )
+      const response = await api.mandatory( mandatoryTypes, grantedList, true )
       if( response === true ){
         // All mandatories are now granted
         grantedList.map( granted => {
-          this.setScope( list.map( each => {
+          api.setScope( list.map( each => {
             if( each.type == granted.type ) each.access = granted.access
             return each
           } ) )
@@ -62,4 +62,6 @@ export default ( app, context, state ) => {
       return false
     }
   }
+
+  return api
 }
