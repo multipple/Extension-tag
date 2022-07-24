@@ -1,20 +1,16 @@
 
-import GState from '../features/GState'
+import EState from '../features/EState'
 import CloudDB from '../features/cloud.db-client'
 import UIStore from '../features/UIStore'
 import APIRequest from '../features/APIRequest'
 import Permissions from '../features/Permissions'
 import Notifications from '../features/Notifications'
 
-function Instance( ___, $ ){
+function Features( ___, $, app, extensionId ){
   
-  const
-  app = this,
-  extensionId = $.nsi,
-
-  Features = {
+  return {
     // Global state in-app support
-    State: GState( ___ ),
+    State: new EState( ___ ),
     // Localstorage support
     UIStore: UIStore( extensionId ),
     // API request handler
@@ -27,11 +23,19 @@ function Instance( ___, $ ){
     DB: CloudDB( 'http://marketplace.multipple.com:5119', '1.0', 'MP.WEB/2.0', extensionId ),
     // Translate string text to locale language using function method
     String: text => { return $.RenderLocale( text ) }
-  },
+  }
+}
+
+function Instance( ___, $, clone ){
   
-  // List of states fields declared by in the apps
-  stateKeys = []
+  const
+  app = this,
+  extensionId = $.nsi
   
+  // Initialize features
+  if( !clone )
+    this.features = Features( ___, $, app, extensionId )
+
   // List of Features dependency assign to the app
   this.deps = []
 
@@ -40,11 +44,11 @@ function Instance( ___, $ ){
 
   // Assign in-build app Features to the component: @params { Array | String }
   this.use = deps => {
-
+    const features = clone ? ___.App.features : this.features
+    
     function assign( name ){
-      
-      if( !Features.hasOwnProperty( name ) ) return
-      app[ name ] = Features[ name ]
+      if( !features.hasOwnProperty( name ) ) return
+      app[ name ] = features[ name ]
       
       // Record dependency to be apply during `App.extend()`
       if( !app.deps.includes( name ) ) app.deps.push( name )
@@ -57,18 +61,19 @@ function Instance( ___, $ ){
   // Extend app instance Features & Data to sub-components
   this.extend = ( component, deps ) => {
     // Confer existing static data of the main app component to extend components
-    component.App = new Instance( component, $ )
+    component.App = new Instance( component, $, true )
+    // Assign root features
+    component.App.features = this.features
+    // Assign main app data
+    component.App.data = this.data
     // Assign requested app Features to the component
     component.App.use([ ...this.deps, ...(deps || []) ])
-    // Assign main app data
-    component.App.data = ___.App.data
     
     // Automatically bind apps's global state to this extended component
-    this.deps.includes('State')
-    && component.App.State.bind( component, stateKeys )
+    component.App.deps.includes('State')
+    && component.App.State.share( component )
 
     // Overwride method & properties that execute only on the main component
-    component.App.Features = Features
     component.App.extend = this.extend
     component.App.getConfig = this.getConfig
     component.App.setConfig = this.setConfig

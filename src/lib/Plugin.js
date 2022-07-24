@@ -1,27 +1,31 @@
 
-import GState from '../features/GState'
+import EState from '../features/EState'
 import UIStore from '../features/UIStore'
 import APIRequest from '../features/APIRequest'
 
-function Instance( ___, $ ){
+function Features( ___, $, plugin, extensionId ){
   
-  const
-  plugin = this,
-  extensionId = $.nsi,
-
-  Features = {
-    // Global state in-app support
-    State: GState( ___ ),
+  return {
+    // Global state in-plugin support
+    State: new EState( ___ ),
     // Localstorage support
     UIStore: UIStore( extensionId ),
     // API request handler
     Request: APIRequest( extensionId, $ ),
     // Translate string text to locale language using function method
     String: text => { return $.RenderLocale( text ) }
-  },
+  }
+}
+
+function Instance( ___, $, clone ){
   
-  // List of states fields declared by in the plugins
-  stateKeys = []
+  const
+  plugin = this,
+  extensionId = $.nsi
+  
+  // Initialize features
+  if( !clone )
+    this.features = Features( ___, $, plugin, extensionId )
   
   // List of Features dependency assign to the plugin
   this.deps = []
@@ -31,11 +35,11 @@ function Instance( ___, $ ){
 
   // Assign in-build plugin Features to the component: @params { Array | String }
   this.use = deps => {
-
+    const features = clone ? ___.Plugin.features : this.features
+    
     function assign( name ){
-      
-      if( !Features.hasOwnProperty( name ) ) return
-      plugin[ name ] = Features[ name ]
+      if( !features.hasOwnProperty( name ) ) return
+      plugin[ name ] = features[ name ]
       
       // Record dependency to be apply during `Plugin.extend()`
       if( !plugin.deps.includes( name ) ) plugin.deps.push( name )
@@ -48,18 +52,19 @@ function Instance( ___, $ ){
   // Extend plugin instance Features & Data to sub-components
   this.extend = ( component, deps ) => {
     // Confer existing static data of the main plugin component to extend components
-    component.Plugin = new Instance( component, $ )
-    // Assign requested app Features to the component
+    component.Plugin = new Instance( component, $, true )
+    // Assign root features
+    component.Plugin.features = this.features
+    // Assign main plugin data
+    component.Plugin.data = this.data
+    // Assign requested plugin Features to the component
     component.Plugin.use([ ...this.deps, ...(deps || []) ])
-    // Assign main app data
-    component.Plugin.data = ___.Plugin.data
-
-    // Automatically bind plugins's global state to this extended component
-    this.deps.includes('State') 
-    && ___.Plugin.State.bind( component, stateKeys )
+    
+    // Automatically bind plugin's global state to this extended component
+    component.deps.includes('State')
+    && component.Plugin.State.share( component )
 
     // Overwride method & properties that execute only on the main component
-    component.Plugin.Features = Features
     component.Plugin.extend = this.extend
     component.Plugin.getConfig = this.getConfig
     component.Plugin.setConfig = this.setConfig
