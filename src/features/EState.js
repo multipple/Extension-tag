@@ -10,7 +10,8 @@ export default function EState( context ){
     if( !context || typeof payload !== 'object' ) return
 
     context.setState( payload )
-    Object.keys( payload ).map( key => stateKeys.push( key ) )
+    Object.entries( payload )
+          .map( ([ key, value ]) => this.set( key, value ) )
   }
   
   this.share = ( component, keys ) => {
