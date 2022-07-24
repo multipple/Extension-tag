@@ -1,6 +1,6 @@
 {
   "name": "@multipple/extension-tag",
-  "version": "0.0.18",
+  "version": "0.0.19",
   "description": "MarkoJS component to load and manage Plugin or Application (extension)",
   "main": "./src/index.marko",
   "files": [
