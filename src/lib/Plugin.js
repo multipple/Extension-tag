@@ -61,7 +61,7 @@ function Instance( ___, $, clone ){
     component.Plugin.use([ ...this.deps, ...(deps || []) ])
     
     // Automatically bind plugin's global state to this extended component
-    component.deps.includes('State')
+    component.Plugin.deps.includes('State')
     && component.Plugin.State.share( component )
 
     // Overwride method & properties that execute only on the main component
