@@ -93,8 +93,11 @@ function Instance( ___, $, clone ){
 
   // Set & Update an installed app configuration
   this.setConfig = async ( payload, pluginNSI ) => {
-    const response = await Features.Request(`/extension/${extensionId}/configure${pluginNSI ? '?plugin='+ pluginNSI : ''}`, 
-                                            { method: 'POST', body: payload })
+    
+    const 
+    features = clone ? ___.App.features : this.features,
+    response = await features.Request(`/extension/${extensionId}/configure${pluginNSI ? '?plugin='+ pluginNSI : ''}`, 
+                                      { method: 'POST', body: payload })
 
     $.Refresh()
     return response

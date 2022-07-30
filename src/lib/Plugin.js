@@ -94,11 +94,15 @@ function Instance( ___, $, clone ){
   // Set & Update an installed plugin configuration
   this.setConfig = async ( payload, pluginNSI ) => {
 
-    return $.input.core ?
-              // Plugin integrated into a core app/plugin
-              await $.input.core.setConfig( payload, extensionId )
-              // Standalone plugin
-              : await Features.Request(`/extension/${extensionId}/configure${pluginNSI ? '?plugin='+ pluginNSI : ''}`, { method: 'POST', body: payload })
+    // Plugin integrated into a core app/plugin
+    if( $.input.core )
+      return await $.input.core.setConfig( payload, extensionId )
+    
+    // Standalone plugin
+    else {
+      const features = clone ? ___.App.features : this.features
+      return await features.Request(`/extension/${extensionId}/configure${pluginNSI ? '?plugin='+ pluginNSI : ''}`, { method: 'POST', body: payload })
+    }
   }
 
   // Return configuration of a given plugin embedded in this plugin
